@@ -18,35 +18,27 @@
         }
         </style>
         <script id="3d-vertex-shader" type="x-shader/x-vertex">
-            // an attribute will receive data from a buffer
             attribute vec4 a_position;
             attribute vec4 a_color;
             
-            //out vec4 vColor;
+            uniform mat4 u_matrix;
+            
             varying lowp vec4 vColor;
             
-            // all shaders have a main function
             void main()
             {
-                // gl_Position is a special variable a vertex shader
-                // is responsible for setting
-                gl_Position = a_position;
+                gl_Position = a_position * u_matrix;
                 vColor = a_color;
             }
         </script>
         <script id="3d-fragment-shader" type="x-shader/x-fragment">
-            // fragment shaders don't have a default precision so we need
-            // to pick one. mediump is a good default
             precision mediump float;
             
-            //in vec4 vColor;
             varying lowp vec4 vColor;
             
             void main()
             {
-                // gl_FragColor is a special variable a fragment shader
-                // is responsible for setting
-                gl_FragColor = vColor;//gl_Color;//vColor;//vec4(1, 0, 0.5, 1); // return reddish-purple
+                gl_FragColor = vColor;
             }
         </script>
     </head>
@@ -56,6 +48,7 @@
         <div id="canvas-container">
             <canvas id="c"></canvas>
         </div>
+        <script src="Mat4.js"></script>
         <script src="webgl-help.js"></script>
         <script src="code3D.js"></script>
     </body>
