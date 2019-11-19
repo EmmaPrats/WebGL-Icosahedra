@@ -18,44 +18,25 @@ function main()
     
     var positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    var positions = [0, 0, 0,
-                     0.5, 0, 0,
-                     0, 0.5, 0];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(generatePyramidGeometry()), gl.STATIC_DRAW);
     
     var colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    var colors = [255, 0, 0,
-                  0, 255, 0,
-                  0, 0, 255];
-    gl.bufferData(gl.ARRAY_BUFFER, new Uint8Array(colors), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Uint8Array(generatePyramidColors()), gl.STATIC_DRAW);
     
     gl.clearColor(0, 0, 0, 0);
     
-    function radToDeg(r) {
-        return r * 180 / Math.PI;
-    }
-    
-    function degToRad(d) {
-        return d * Math.PI / 180;
-    }
-    
-    /*var translation = [0, 0, -360];
-    var rotation = [degToRad(190), degToRad(40), degToRad(320)];
-    var scale = [1, 1, 1];
-    
-    var rotationSpeed = 1.2;*/
-    var fieldOfViewRadians = degToRad(60);
-    var rotation = [degToRad(190), degToRad(40), degToRad(320)];
-    var rotationSpeed = 1.2;
-    
-    // code above this line is initialization code.
-    // code below this line is rendering code.
+    var rotationSpeed = 0.01;
+    var rotationX = 0.5;
+    var rotationY = 0;
     
     animationLoop();
     
     function animationLoop()
     {
+        //rotationX += rotationSpeed;
+        rotationY += rotationSpeed;
+        
         resizeToMatchCSS(gl);
         
         // Tell WebGL how to convert from clip space to pixels
@@ -103,9 +84,13 @@ function main()
         
         // Compute the matrices
         var width = gl.canvas.width * 2 / gl.canvas.height;
-        var matrixObject = new Matrix4(Mat4.orthographic(-width/2, width/2,
+        var matrixObject = new Matrix4(Mat4.orthographic(-1, 1,
                                                          -1, 1,
-                                                         0.5, -0.5));
+                                                         -1, 1));
+        matrixObject.rotateY(rotationY);
+        matrixObject.rotateX(-rotationX);
+        matrixObject.scale(1.4);
+        matrixObject.translate(0, 0.2, 0);
         
         // Set the matrix.
         gl.uniformMatrix4fv(matrixUniformLocation, false, new Float32Array(matrixObject.matrix));
@@ -113,7 +98,7 @@ function main()
         // draw
         var primitiveType = gl.TRIANGLES;
         var offset = 0;
-        var count = 3;
+        var count = 6 * 3; //triangles * vertices_per_triangle
         gl.drawArrays(primitiveType, offset, count);
         
         requestAnimationFrame(animationLoop);
@@ -121,3 +106,71 @@ function main()
 }
 
 main();
+
+function generatePyramidGeometry()
+{
+    return vertices = [
+                       //BASE
+                       -0.5, -0.5, 0.5,  //0
+                       -0.5, -0.5, -0.5, //1
+                       0.5, -0.5, 0.5,   //2
+                       
+                       0.5, -0.5, 0.5,   //2
+                       -0.5, -0.5, -0.5, //1
+                       0.5, -0.5, -0.5,  //3
+                       
+                       //FRONT
+                       0.0, 0.5, 0.0,    //4 tip
+                       -0.5, -0.5, 0.5,  //0
+                       0.5, -0.5, 0.5,   //2
+                       
+                       //RIGHT
+                       0.0, 0.5, 0.0,    //4 tip
+                       0.5, -0.5, 0.5,   //2
+                       0.5, -0.5, -0.5,  //3
+                       
+                       //BACK
+                       0.0, 0.5, 0.0,    //4 tip
+                       0.5, -0.5, -0.5,  //3
+                       -0.5, -0.5, -0.5, //1
+                       
+                       //LEFT
+                       0.0, 0.5, 0.0,    //4 tip
+                       -0.5, -0.5, -0.5, //1
+                       -0.5, -0.5, 0.5  //0
+    ];
+}
+
+function generatePyramidColors()
+{
+    return colors = [
+                     //BASE
+                     255,   0,   0,    //0
+                       0, 255,   0,    //1
+                       0,   0, 255,    //2
+                     
+                       0,   0, 255,    //2
+                       0, 255,   0,    //1
+                     255,   0, 255,    //3
+                     
+                     //FRONT
+                     255, 255,   0,    //4 tip
+                     255,   0,   0,    //0
+                       0,   0, 255,    //2
+                     
+                     //RIGHT
+                     255, 255,   0,    //4 tip
+                       0,   0, 255,    //2
+                     255,   0, 255,    //3
+                     
+                     //BACK
+                     255, 255,   0,    //4 tip
+                     255,   0, 255,    //3
+                       0, 255,   0,    //1
+                     
+                     //LEFT
+                     255, 255,   0,    //4 tip
+                       0, 255,   0,    //1
+                     255,   0,   0    //0
+    ];
+}
