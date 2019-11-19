@@ -5,7 +5,7 @@ Using WebGL, GLSL, and basic geometry to generate and display icosahedra meshes.
 
 [x] Display a triangle with colors in 2D.
 
-[ ] Make it rotate in 3D.
+[x] Make it rotate in 3D.
 
 [ ] Add lighting.
 
