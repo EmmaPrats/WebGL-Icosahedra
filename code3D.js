@@ -19,7 +19,7 @@ function main()
     var positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     var positions = [0, 0, 0,
-                     0.7, 0, 0,
+                     0.5, 0, 0,
                      0, 0.5, 0];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
     
@@ -39,12 +39,15 @@ function main()
     function degToRad(d) {
         return d * Math.PI / 180;
     }
-    /*
-    var translation = [0, 0, -360];
+    
+    /*var translation = [0, 0, -360];
     var rotation = [degToRad(190), degToRad(40), degToRad(320)];
     var scale = [1, 1, 1];
-    var fieldOfViewRadians = degToRad(60);
+    
     var rotationSpeed = 1.2;*/
+    var fieldOfViewRadians = degToRad(60);
+    var rotation = [degToRad(190), degToRad(40), degToRad(320)];
+    var rotationSpeed = 1.2;
     
     // code above this line is initialization code.
     // code below this line is rendering code.
@@ -61,10 +64,8 @@ function main()
         // Clear the canvas
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         
-        // Turn on culling. By default backfacing triangles
-        // will be culled.
+        // Turn on culling. By default backfacing triangles will be culled.
         gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
         
         // Enable the depth buffer
         gl.enable(gl.DEPTH_TEST);
@@ -99,6 +100,15 @@ function main()
         var stride = 0;               // 0 = move forward size * sizeof(type) each iteration to get the next position
         var offset = 0;               // start at the beginning of the buffer
         gl.vertexAttribPointer(colorAttributeLocation, size, type, normalize, stride, offset);
+        
+        // Compute the matrices
+        var width = gl.canvas.width * 2 / gl.canvas.height;
+        var matrixObject = new Matrix4(Mat4.orthographic(-width/2, width/2,
+                                                         -1, 1,
+                                                         0.5, -0.5));
+        
+        // Set the matrix.
+        gl.uniformMatrix4fv(matrixUniformLocation, false, new Float32Array(matrixObject.matrix));
         
         // draw
         var primitiveType = gl.TRIANGLES;
