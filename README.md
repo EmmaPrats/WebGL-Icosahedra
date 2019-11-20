@@ -7,7 +7,7 @@ Using WebGL, GLSL, and basic geometry to generate and display icosahedra meshes.
 
 [x] Make it rotate in 3D.
 
-[ ] Add lighting.
+[x] Add lighting.
 
 [ ] Display a rotating icosahedron in 3D.
 

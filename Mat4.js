@@ -11,39 +11,43 @@ Mat4.identity = function()
             0, 1, 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1];
-}
+};
 
 Mat4.translation = function(x, y, z)
 {
-    return [1, 0, 0, x,
-            0, 1, 0, y,
-            0, 0, 1, z,
-            0, 0, 0, 1];
-}
+    return [1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            x, y, z, 1];
+};
 
 Mat4.rotationX = function(radians)
 {
-    return [1, 0, 0, 0,
+    /*return [1, 0, 0, 0,
             0, Math.cos(radians), -Math.sin(radians), 0,
             0, Math.sin(radians), Math.cos(radians), 0,
+            0, 0, 0, 1];*/
+    return [1, 0, 0, 0,
+            0, Math.cos(radians), Math.sin(radians), 0,
+            0, -Math.sin(radians), Math.cos(radians), 0,
             0, 0, 0, 1];
-}
+};
 
 Mat4.rotationY = function(radians)
 {
-    return [Math.cos(radians), 0, Math.sin(radians), 0,
+    return [Math.cos(radians), 0, -Math.sin(radians), 0,
             0, 1, 0, 0,
-            -Math.sin(radians), 0, Math.cos(radians), 0,
+            Math.sin(radians), 0, Math.cos(radians), 0,
             0, 0, 0, 1];
-}
+};
 
 Mat4.rotationZ = function(radians)
 {
-    return [Math.cos(radians), -Math.sin(radians), 0, 0,
-            Math.sin(radians), Math.cos(radians), 0, 0,
+    return [Math.cos(radians), Math.sin(radians), 0, 0,
+            -Math.sin(radians), Math.cos(radians), 0, 0,
             0, 0, 1, 0,
             0, 0, 0, 1];
-}
+};
 
 Mat4.scale = function(x, y, z)
 {
@@ -58,7 +62,7 @@ Mat4.scale = function(x, y, z)
             0, y, 0, 0,
             0, 0, z, 0,
             0, 0, 0, 1];
-}
+};
 
 Mat4.multiply = function(first, second)
 {
@@ -114,7 +118,51 @@ Mat4.multiply = function(first, second)
     result[14] = b30 * a02 + b31 * a12 + b32 * a22 + b33 * a32;
     result[15] = b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33;
     return result;
-}
+};
+
+Mat4.projection = function(left, right, bottom, top, near, far)
+{
+    var result = [];
+    result[ 0] = 2 * near / (right - left);
+    result[ 1] = 0;
+    result[ 2] = 0;
+    result[ 3] = 0;
+    result[ 4] = 0;
+    result[ 5] = 2 * near / (top - bottom);
+    result[ 6] = 0;
+    result[ 7] = 0;
+    result[ 8] = (right + left) / (right - left);
+    result[ 9] = (top + bottom) / (top - bottom);
+    result[10] = -(far + near) / (far - near);
+    result[11] = -1;
+    result[12] = 0;
+    result[13] = 0;
+    result[14] = -2 * far * near / (far - near);
+    result[15] = 1;
+    return result;
+};
+
+Mat4.projectionSymmetric = function(left, right, bottom, top, near, far)
+{
+    var result = [];
+    result[ 0] = near / right;
+    result[ 1] = 0;
+    result[ 2] = 0;
+    result[ 3] = 0;
+    result[ 4] = 0;
+    result[ 5] = near / right;
+    result[ 6] = 0;
+    result[ 7] = 0;
+    result[ 8] = 0;
+    result[ 9] = 0;
+    result[10] = -(far + near) / (far - near);
+    result[11] = -1;
+    result[12] = 0;
+    result[13] = 0;
+    result[14] = -2 * far * near / (far - near);
+    result[15] = 1;
+    return result;
+};
 
 Mat4.orthographic = function(left, right, bottom, top, near, far)
 {
@@ -129,11 +177,11 @@ Mat4.orthographic = function(left, right, bottom, top, near, far)
     result[ 7] = 0;
     result[ 8] = 0;
     result[ 9] = 0;
-    result[10] = 2 / (near - far);
+    result[10] = -2 / (near - far);
     result[11] = 0;
-    result[12] = (left + right) / (left - right);
-    result[13] = (bottom + top) / (bottom - top);
-    result[14] = (near + far) / (near - far);
+    result[12] = -(left + right) / (left - right);
+    result[13] = -(bottom + top) / (bottom - top);
+    result[14] = -(near + far) / (near - far);
     result[15] = 1;
     return result;
 }
@@ -146,27 +194,27 @@ function Matrix4(array)
 Matrix4.prototype.translate = function(x, y, z)
 {
     this.multiply(Mat4.translation(x, y, z));
-}
+};
 
 Matrix4.prototype.rotateX = function(radians)
 {
     this.multiply(Mat4.rotationX(radians));
-}
+};
 
 Matrix4.prototype.rotateY = function(radians)
 {
     this.multiply(Mat4.rotationY(radians));
-}
+};
 
 Matrix4.prototype.rotateZ = function(radians)
 {
     this.multiply(Mat4.rotationZ(radians));
-}
+};
 
 Matrix4.prototype.scale = function(x, y, z)
 {
     this.multiply(Mat4.scale(x, y, z));
-}
+};
 
 Matrix4.prototype.multiply = function(otherMatrix)
 {
@@ -220,7 +268,7 @@ Matrix4.prototype.multiply = function(otherMatrix)
     this.matrix[13] = b30 * a01 + b31 * a11 + b32 * a21 + b33 * a31;
     this.matrix[14] = b30 * a02 + b31 * a12 + b32 * a22 + b33 * a32;
     this.matrix[15] = b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33;
-}
+};
 
 Matrix4.prototype.multiplyAfter = function(otherMatrix)
 {
@@ -274,7 +322,7 @@ Matrix4.prototype.multiplyAfter = function(otherMatrix)
     this.matrix[13] = b30 * a01 + b31 * a11 + b32 * a21 + b33 * a31;
     this.matrix[14] = b30 * a02 + b31 * a12 + b32 * a22 + b33 * a32;
     this.matrix[15] = b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33;
-}
+};
 
 Matrix4.prototype.copy = function()
 {
@@ -282,4 +330,4 @@ Matrix4.prototype.copy = function()
     for (let i=0; i<16; i++)
         copyOfMatrix[i] = this.matrix[i];
     return new Matrix4(copyOfMatrix);
-}
+};
