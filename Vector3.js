@@ -31,7 +31,7 @@ Vector3.crossArray = function(vector1, vector2)
 
 Vector3.prototype.magnitude = function()
 {
-    return Math.sqrt (this.x * this.x + this.y * this.y + this.z * this.z);
+    return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 };
 
 Vector3.prototype.normalize = function()
@@ -40,4 +40,34 @@ Vector3.prototype.normalize = function()
     this.x /= mag;
     this.y /= mag;
     this.z /= mag;
+};
+
+Vector3.prototype.normalized = function()
+{
+    var mag = this.magnitude();
+    return new Vector3(this.x / mag, this.y / mag, this.z / mag);
+};
+
+Vector3.normalized = function(vector)
+{
+    var mag = vector.magnitude();
+    return new Vector3(vector.x / mag, vector.y / mag, vector.z / mag);
+};
+
+Vector3.normalized = function(x, y, z)
+{
+    var mag = Math.sqrt(x*x + y*y + z*z);
+    return new Vector3(x/mag, y/mag, z/mag);
+};
+
+Vector3.prototype.mult = function(scalar)
+{
+    this.x *= scalar;
+    this.y *= scalar;
+    this.z *= scalar;
+};
+
+Vector3.mult = function(vector, scalar)
+{
+    return new Vector3(vector.x * scalar, vector.y * scalar, vector.z * scalar);
 };

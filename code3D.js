@@ -18,20 +18,18 @@ function main()
     var matrixViewUniformLocation = gl.getUniformLocation(program, "u_view");
     var matrixProjectionUniformLocation = gl.getUniformLocation(program, "u_projection");
     
+    var mesh = new Mesh(0.2, 0);
+    
     var pyramidGeometry = generatePyramidGeometry();
     var pyramidNormals = calculateNormals(pyramidGeometry);
 
     var positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pyramidGeometry), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.vertices), gl.STATIC_DRAW);
     
     var normalBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pyramidNormals), gl.STATIC_DRAW);
-    
-    var colorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Uint8Array(generatePyramidColors()), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.hardEdgeNormals), gl.STATIC_DRAW);
     
     gl.clearColor(0, 0, 0, 0);
     
@@ -47,6 +45,10 @@ function main()
     var objectColor = [1.0, 0.5, 0.31, 1.0];
     var lightColor = [1.0, 1.0, 1.0];
     var lightPosition = [1.2, 1.0, 2.0];
+    
+    var hardEdges = true;
+    
+    window.addEventListener("keydown", toggleEdges);
     
     animationLoop();
     
@@ -121,10 +123,20 @@ function main()
         // draw
         var primitiveType = gl.TRIANGLES;
         var offset = 0;
-        var count = 6 * 3; //triangles * vertices_per_triangle
+        var count = mesh.vertices.length / 3;//6 * 3; //triangles * vertices_per_triangle
         gl.drawArrays(primitiveType, offset, count);
         
         requestAnimationFrame(animationLoop);
+    }
+    
+    function toggleEdges()
+    {
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        if (hardEdges)
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.hardEdgeNormals), gl.STATIC_DRAW);
+        else
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.normals), gl.STATIC_DRAW);
+        hardEdges = !hardEdges;
     }
 }
 
@@ -225,4 +237,57 @@ function generatePyramidColors()
                        0, 255,   0,    //1
                      255,   0,   0    //0
     ];
+}
+
+function Mesh(radius, subdivisions)
+{
+    this.icosahedron = new Icosahedron(radius, subdivisions);
+    
+    var verts = [];
+    for (let i=0; i<this.icosahedron.triangles.length; i++)
+        verts[i] = this.icosahedron.vertices[this.icosahedron.triangles[i]];
+    
+    var norms = [];
+    for (let i=0; i<verts.length; i++)
+        norms[i] = verts[i].normalized();
+    
+    var j = 0;
+    this.vertices = [];
+    for (let i=0; i<verts.length*3; i+=3)
+    {
+        this.vertices[i  ] = verts[j].x;
+        this.vertices[i+1] = verts[j].y;
+        this.vertices[i+2] = verts[j].z;
+        j++
+    }
+    
+    j = 0;
+    this.normals = [];
+    for (let i=0; i<verts.length*3; i+=3)
+    {
+        this.normals[i  ] = norms[j].x;
+        this.normals[i+1] = norms[j].y;
+        this.normals[i+2] = norms[j].z;
+        j++
+    }
+    
+    var hardEdgeNorms = [];
+    for (let i=0; i<verts.length; i+=3)
+    {
+        var normal = Vector3.cross(Vector3.sub(verts[i+2], verts[i+1]),
+                                   Vector3.sub(verts[i], verts[i+1]));
+        hardEdgeNorms[i  ] = normal.normalized();
+        hardEdgeNorms[i+1] = normal.normalized();
+        hardEdgeNorms[i+2] = normal.normalized();
+    }
+    
+    j = 0;
+    this.hardEdgeNormals = [];
+    for (let i=0; i<verts.length*3; i+=3)
+    {
+        this.hardEdgeNormals[i  ] = hardEdgeNorms[j].x;
+        this.hardEdgeNormals[i+1] = hardEdgeNorms[j].y;
+        this.hardEdgeNormals[i+2] = hardEdgeNorms[j].z;
+        j++
+    }
 }
