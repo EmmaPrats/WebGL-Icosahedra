@@ -61,7 +61,14 @@ function formMain()
     function downloadAsObj()
     {
         console.log("downloading");
-        main.externalFunction();
+        
+        var element = document.createElement("a");
+        element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(webGLProgram.mesh.generateObjFile()));
+        element.setAttribute("download", "mesh.obj");
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
     }
     
     var shape = shapeIcosahedron.checked ? "icosahedron" : "truncated";

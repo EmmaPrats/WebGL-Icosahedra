@@ -56,7 +56,7 @@ function Icosahedron(radius, subdivisions)
     this.normals = [];
     for (let i=0; i<this.vertices.length; i++)
     {
-        this.normals[i] = Vector3.normalized(this.vertices[i]);
+        this.normals[i] = Vector3.normalized(this.vertices[i].x, this.vertices[i].y, this.vertices[i].z);
     }
     
     this.radius = radius;

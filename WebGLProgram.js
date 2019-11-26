@@ -313,3 +313,65 @@ function Mesh(shape, radius, subdivisions)
         j++
     }
 }
+
+Mesh.prototype.generateObjFile = function(hardEdges)
+{
+    var str = "# Icosahedron mesh generated with Emma Prats' application:\n";
+    str += "# http://emmaprats.cat/Icosahedra/index.html\n";
+    str += "\n";
+    
+    if (hardEdges)
+    {
+        str += "# List of geometric vertices with (x, y, z) coordinates.\n";
+        for (let i=0; i<this.geometry.vertices.length; i++)
+        {
+            str += "v " + this.geometry.vertices[i].x + " " +
+            this.geometry.vertices[i].y + " " +
+            this.geometry.vertices[i].z + "\n";
+        }
+        str += "\n";
+        str += "# List of vertex normals in (x, y, z) form.\n";
+        for (let i=0; i<this.geometry.normals.length; i++)
+        {
+            str += "vn " + this.geometry.normals[i].x + " " +
+            this.geometry.normals[i].y + " " +
+            this.geometry.normals[i].z + "\n";
+        }
+        str += "\n";
+        str += "# Polygonal face elements (triangles).\n";
+        for (let i=0; i<this.geometry.triangles.length; i+=3)
+        {
+            str += "f " + (this.geometry.triangles[i] + 1) + " " +
+            (this.geometry.triangles[i+1] + 1) + " " +
+            (this.geometry.triangles[i+2] + 1) + "\n";
+        }
+    }
+    else
+    {
+        str += "# List of geometric vertices with (x, y, z) coordinates.\n";
+        for (let i=0; i<this.geometry.vertices.length; i++)
+        {
+            str += "v " + this.geometry.vertices[i].x + " " +
+                          this.geometry.vertices[i].y + " " +
+                          this.geometry.vertices[i].z + "\n";
+        }
+        str += "\n";
+        str += "# List of vertex normals in (x, y, z) form.\n";
+        for (let i=0; i<this.geometry.normals.length; i++)
+        {
+            str += "vn " + this.geometry.normals[i].x + " " +
+                           this.geometry.normals[i].y + " " +
+                           this.geometry.normals[i].z + "\n";
+        }
+        str += "\n";
+        str += "# Polygonal face elements (triangles).\n";
+        for (let i=0; i<this.geometry.triangles.length; i+=3)
+        {
+            str += "f " + (this.geometry.triangles[i] + 1) + " " +
+                          (this.geometry.triangles[i+1] + 1) + " " +
+                          (this.geometry.triangles[i+2] + 1) + "\n";
+        }
+    }
+    
+    return str;
+}
