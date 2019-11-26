@@ -1,5 +1,7 @@
 function main()
 {
+    var subdivisions = 0;
+    
     var canvas = document.getElementById("c");
     
     var gl = canvas.getContext("webgl");
@@ -18,7 +20,7 @@ function main()
     var matrixViewUniformLocation = gl.getUniformLocation(program, "u_view");
     var matrixProjectionUniformLocation = gl.getUniformLocation(program, "u_projection");
     
-    var mesh = new Mesh(0.2, 0);
+    var mesh = new Mesh(0.45, subdivisions);
     
     var pyramidGeometry = generatePyramidGeometry();
     var pyramidNormals = calculateNormals(pyramidGeometry);
@@ -49,6 +51,7 @@ function main()
     var hardEdges = true;
     
     window.addEventListener("keydown", toggleEdges);
+    window.addEventListener("mousedown", toggleSubdivisions);
     
     animationLoop();
     
@@ -137,6 +140,24 @@ function main()
         else
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.normals), gl.STATIC_DRAW);
         hardEdges = !hardEdges;
+    }
+    
+    function toggleSubdivisions()
+    {
+        subdivisions++;
+        if (subdivisions > 2)
+            subdivisions = 0;
+        
+        mesh = new Mesh(0.45, subdivisions);
+        
+        pyramidGeometry = generatePyramidGeometry();
+        pyramidNormals = calculateNormals(pyramidGeometry);
+        
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.vertices), gl.STATIC_DRAW);
+        
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.hardEdgeNormals), gl.STATIC_DRAW);
     }
 }
 

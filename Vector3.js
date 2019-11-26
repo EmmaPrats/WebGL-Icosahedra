@@ -7,6 +7,13 @@ function Vector3(x = 0, y = 0, z = 0)
     this.z = z;
 }
 
+Vector3.add = function(vector1, vector2)
+{
+    return new Vector3(vector1.x + vector2.x,
+                       vector1.y + vector2.y,
+                       vector1.z + vector2.z);
+};
+
 Vector3.sub = function(vector1, vector2)
 {
     return new Vector3(vector1.x - vector2.x,
@@ -48,12 +55,6 @@ Vector3.prototype.normalized = function()
     return new Vector3(this.x / mag, this.y / mag, this.z / mag);
 };
 
-Vector3.normalized = function(vector)
-{
-    var mag = vector.magnitude();
-    return new Vector3(vector.x / mag, vector.y / mag, vector.z / mag);
-};
-
 Vector3.normalized = function(x, y, z)
 {
     var mag = Math.sqrt(x*x + y*y + z*z);
@@ -65,6 +66,13 @@ Vector3.prototype.mult = function(scalar)
     this.x *= scalar;
     this.y *= scalar;
     this.z *= scalar;
+};
+
+Vector3.prototype.div = function(scalar)
+{
+    this.x /= scalar;
+    this.y /= scalar;
+    this.z /= scalar;
 };
 
 Vector3.mult = function(vector, scalar)
