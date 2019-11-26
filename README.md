@@ -13,4 +13,4 @@ Using WebGL, GLSL, and basic geometry to generate and display icosahedra meshes.
 
 [x] Subdivide icosahedron as many times as needed, display in 3D.
 
-[ ] Display a rotating football ball in 3D.
+[x] Display a rotating football ball in 3D.

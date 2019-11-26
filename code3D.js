@@ -262,7 +262,7 @@ function generatePyramidColors()
 
 function Mesh(radius, subdivisions)
 {
-    this.icosahedron = new Icosahedron(radius, subdivisions);
+    this.icosahedron = new TruncatedIcosahedron(radius);//new Icosahedron(radius, subdivisions);
     
     var verts = [];
     for (let i=0; i<this.icosahedron.triangles.length; i++)
